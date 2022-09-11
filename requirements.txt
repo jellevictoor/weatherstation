@@ -1,0 +1,1 @@
+micropython-umqtt.robust>=1.0
