@@ -26,13 +26,13 @@ def mqtt_connect():
 def send(timer):
     machine_led.value(1)
     global rocker_count
-    no_of_rocks_to_send = rocker_count  # always triggered twice
+    no_of_rocks_to_send = rocker_count
     temp = round(bme.temperature, 2)
     hum = round(bme.humidity, 2)
     pres = round(bme.pressure, 2)
     gas = round(bme.gas / 1000, 2)
     data_to_send = {
-        "rainfall": no_of_rocks_to_send / 2 * rocker_modifier,
+        "rainfall": (no_of_rocks_to_send / 2) * rocker_modifier,  # always triggered twice
         "temp": temp,
         "pressure": pres,
         "humidity": hum,
@@ -66,15 +66,18 @@ def reconnect():
     print('Failed to connect to the MQTT Broker. Reconnecting...')
     time.sleep(5)
     machine.reset()
-    # 36 rocks = 0.3l
-    # surface = 26590,44021998400997
-    # 1000000/26590 = 37.60812
-    # 36 rocks = 0.007977002l/m2
-    # 1 rock = 0.0002215834l/m2
+    # 36 rocks = 0.3 l
+    # 1 rock = 0.0083 l
+    # rock = 0.3/36
+    # surface_in_mm =  pow(180/2,2) * math.pi
+    # surface_exploder = 1000000/surface_in_mm
+    # liter_modifier = surface_exploder * rock
+
+
 
 
 rocker_count = 0
-rocker_modifier = 0.0002215834
+rocker_modifier = 0.3274793067734472
 mqtt_server = '192.168.1.5'
 client_id = 'weatherstation'
 topic_pub = b'klskmp/buiten/weather'
