@@ -1,11 +1,14 @@
+from src.weather.bme680 import BME680_I2C
 import network
 import machine
 import utime
 from machine import Pin, I2C, Timer
 from time import sleep
-from bme680 import *
+
 from umqtt.robust import MQTTClient
 import json
+
+
 
 machine_led = Pin('LED', Pin.OUT)
 
@@ -50,21 +53,36 @@ def send(timer):
 
 
 def start_up_sequence():
-    machine_led.value(1)
-
+    for i in range(3):
+        machine_led.value(1)
+        sleep(0.1)
+        machine_led.value(0)
+        sleep(0.1)
+    
     wlan = network.WLAN(network.STA_IF)
     wlan.active(True)
     wlan.connect("victoor", "victoor123")
 
     while not wlan.isconnected() and wlan.status() >= 0:
         print("Waiting to connect:")
-        time.sleep(1)
+        for i in range(3):
+            machine_led.value(1)
+            sleep(0.01)
+            machine_led.value(0)
+            sleep(0.01)
+            
     machine_led.value(0)
+    print("connected to wlan")
+    sleep(3)
 
 
 def reconnect():
     print('Failed to connect to the MQTT Broker. Reconnecting...')
-    time.sleep(5)
+    for i in range(3):
+        machine_led.value(1)
+        sleep(1)
+        machine_led.value(0)
+        sleep(1)
     machine.reset()
     # 36 rocks = 0.3 l
     # 1 rock = 0.0083 l
@@ -81,7 +99,7 @@ rocker_modifier = 0.3274793067734472
 mqtt_server = '192.168.1.5'
 client_id = 'weatherstation'
 topic_pub = b'klskmp/buiten/weather'
-rocker = Pin(18, Pin.IN, Pin.PULL_UP)
+rocker = Pin(28, Pin.IN, Pin.PULL_UP)
 bme = None
 client = None
 
@@ -97,3 +115,5 @@ def setup():
     rocker.irq(tipped)
     timer = Timer(-1)
     timer.init(period=5000, mode=Timer.PERIODIC, callback=send)
+
+
