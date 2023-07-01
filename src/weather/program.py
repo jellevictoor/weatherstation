@@ -32,7 +32,7 @@ wdt = WDT(timeout=TIMEOUT + 2000)  # set a timeout of 2s more
 machine_led = Pin('LED', Pin.OUT)
 
 
-def tipped():
+def tipped(pin):
     global rocker_count
     rocker_count = rocker_count + 1
     print("rocker triggered")
