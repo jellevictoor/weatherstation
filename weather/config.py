@@ -14,6 +14,6 @@ config = {
         'topic_pub': b'klskmp/buiten/weather_station/data',
         'status_pub': b'klskmp/buiten/weather_station/status'
     },
-    'wifi_ssid': "victoor",
-    'wifi_password': "victoor123"
+    'wifi_ssid': "secret",
+    'wifi_password': "secret"
 }

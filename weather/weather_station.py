@@ -11,7 +11,7 @@ class WeatherStation:
         self._scl = config['pins']['bme']['scl']
         self._sda = config['pins']['bme']['sda']
         self._listener = listener
-        self._rocker_pin = config['pins']['rocker_pin']
+        self._rocker_pin = config['pins']['rocker']
         self._rocker_pin.irq(self.tipped)
         self._bme = self.connect_with_bme()
 

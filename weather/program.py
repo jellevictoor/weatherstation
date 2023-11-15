@@ -1,7 +1,7 @@
 from time import sleep
 
 import network
-from machine import Pin, Timer
+from machine import Pin, Timer, WDT
 
 from weather.config import config
 from weather.listener import WeatherStationListener
@@ -10,12 +10,14 @@ from weather.weather_station import WeatherStation
 
 TIMEOUT = 5000
 
+
 class FakeWatchDog:
     def feed(self):
         print("feeding")
 
 
-wdt = FakeWatchDog()  # WDT(timeout=TIMEOUT + 3000)  # set a timeout of 3s more
+# wdt = FakeWatchDog()
+wdt = WDT(timeout=TIMEOUT + 3000)  # set a timeout of 3s more
 machine_led = Pin('LED', Pin.OUT)
 
 
