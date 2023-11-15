@@ -2,13 +2,14 @@ import json
 
 from umqtt.simple import MQTTClient
 
+from weather.config import config
+
 
 class MqttClient:
-    _mqtt_server = '192.168.1.5'
-    _client_id = 'weatherstation'
-    _topic_pub = b'klskmp/buiten/weather_station/data'
-    _status_pub = b'klskmp/buiten/weather_station/status'
-    _lst_pub = b'klskmp/buiten/weather_station/lst'
+    _mqtt_server = config['mqtt']['host']
+    _client_id = config['mqtt']['client_id']
+    _topic_pub = config['mqtt']['topic_pub']
+    _status_pub = config['mqtt']['status_pub']
 
     def __init__(self):
         self._client = MQTTClient(self._client_id, self._mqtt_server, keepalive=5)

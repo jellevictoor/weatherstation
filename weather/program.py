@@ -3,13 +3,12 @@ from time import sleep
 import network
 from machine import Pin, Timer
 
+from weather.config import config
 from weather.listener import WeatherStationListener
 from weather.mqtt_client import MqttClient
 from weather.weather_station import WeatherStation
 
 TIMEOUT = 5000
-rocker_pin = Pin(28, Pin.IN, Pin.PULL_UP)
-
 
 class FakeWatchDog:
     def feed(self):
@@ -32,7 +31,8 @@ def start_up_sequence():
 def connect_wlan():
     wlan = network.WLAN(network.STA_IF)
     wlan.active(True)
-    wlan.connect("victoor", "victoor123")
+
+    wlan.connect(config['wifi_ssid'], config['wifi_password'])
     tries = 0
     while not wlan.isconnected() and wlan.status() >= 0 and tries < 10:
         print("Waiting to connect:")

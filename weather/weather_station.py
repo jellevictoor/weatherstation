@@ -1,16 +1,17 @@
 from machine import Pin, I2C
 
 from weather.bme680 import BME680_I2C
+from weather.config import config
 
 
 class WeatherStation:
-    def __init__(self, scl=Pin(17), sda=Pin(16), listener=None):
+    def __init__(self, listener=None):
         self._rocker_count = 0
         self._rocker_modifier = 0.3274793067734472
-        self._scl = scl
-        self._sda = sda
+        self._scl = config['pins']['bme']['scl']
+        self._sda = config['pins']['bme']['sda']
         self._listener = listener
-        self._rocker_pin = Pin(28, Pin.IN, Pin.PULL_UP)
+        self._rocker_pin = config['pins']['rocker_pin']
         self._rocker_pin.irq(self.tipped)
         self._bme = self.connect_with_bme()
 
