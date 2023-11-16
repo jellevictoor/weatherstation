@@ -1,4 +1,4 @@
-from machine import Pin, I2C
+from machine import I2C
 
 from weather.bme680 import BME680_I2C
 from weather.config import config
