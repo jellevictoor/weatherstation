@@ -32,6 +32,10 @@ class WeatherStation:
             "pressure": self._bme.pressure(),
             "gas": self._bme.gas(),
             "altitude": self._bme.altitude(),
+            "temperature_oversample": self._bme.temperature_oversample(),
+            "humidity_oversample": self._bme.humidity_oversample(),
+            "pressure_oversample": self._bme.pressure_oversample(),
+            "filter_size": self._bme.filter_size(),
             "rainfall": rainfall
         }
         self._rocker_count = self._rocker_count - self._rocker_count
