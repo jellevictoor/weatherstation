@@ -1,6 +1,6 @@
 from machine import I2C
 
-from weather.bme680 import BME680_I2C
+from bme680 import *
 from weather.config import config
 
 
@@ -21,16 +21,17 @@ class WeatherStation:
 
     def connect_with_bme(self):
         i2c = I2C(id=0, scl=self._scl, sda=self._sda)
+
         return BME680_I2C(i2c=i2c)
 
     def notify(self, timer):
         rainfall = (self._rocker_count / 2) * self._rocker_modifier  # always triggered twice
         sensor_data = {
-            "temperature": self._bme.temperature,
-            "humidity": self._bme.humidity,
-            "pressure": self._bme.pressure,
-            "gas": self._bme.gas,
-            "altitude": self._bme.altitude,
+            "temperature": self._bme.temperature(),
+            "humidity": self._bme.humidity(),
+            "pressure": self._bme.pressure(),
+            "gas": self._bme.gas(),
+            "altitude": self._bme.altitude(),
             "rainfall": rainfall
         }
         self._rocker_count = self._rocker_count - self._rocker_count

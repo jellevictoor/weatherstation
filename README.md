@@ -37,6 +37,7 @@ This is a MicroPython-based weather station designed for real-time environmental
 The way you wire everything is not super important. you have 2 connections that need to be made.
 1. the reed contact needs to be connected to a pin that can be used as an interrupt. I used pin `28` on my pico, but you can use any pin that supports interrupts.
 2. the BME680 sensor needs to be connected to the I2C bus. on the pico this is pin `16` and `17`. you can use any I2C bus on your board, but you will need to update the `settings.py` file to use the correct bus.
+the included BME680 lib is from https://github.com/robert-hh/BME680-Micropython
 
 # Installation
 
