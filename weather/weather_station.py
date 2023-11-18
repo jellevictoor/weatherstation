@@ -1,20 +1,24 @@
-from machine import I2C
+from machine import I2C, ADC
 
 from bme680 import *
-from weather.config import config
 
 
 class WeatherStation:
-    def __init__(self, listener=None):
+    def __init__(self, config, listeners=None):
+        if listeners is None:
+            listeners = []
+
         self._rocker_count = 0
         self._cumulative_rainfall = 0
         self._rocker_modifier = 0.3274793067734472
         self._scl = config['pins']['bme']['scl']
         self._sda = config['pins']['bme']['sda']
-        self._listener = listener
+        self._listeners = listeners
         self._rocker_pin = config['pins']['rocker']
         self._rocker_pin.irq(self.tipped)
+
         self._bme = self.connect_with_bme()
+        self._adc = ADC(4)
 
     def tipped(self, pin):
         self._rocker_count = self._rocker_count + 1
@@ -24,9 +28,10 @@ class WeatherStation:
         i2c = I2C(id=0, scl=self._scl, sda=self._sda)
         return BME680_I2C(i2c=i2c)
 
-    def notify(self, timer):
+    def read_weather_data(self, timer):
         rainfall = (self._rocker_count / 2) * self._rocker_modifier  # always triggered twice
         self._cumulative_rainfall = self._cumulative_rainfall + rainfall
+
         sensor_data = {
             "temperature": self._bme.temperature(),
             "humidity": self._bme.humidity(),
@@ -38,7 +43,17 @@ class WeatherStation:
             "pressure_oversample": self._bme.pressure_oversample(),
             "filter_size": self._bme.filter_size(),
             "rainfall": rainfall,
-            "cumulative_rainfall": self._cumulative_rainfall
+            "cumulative_rainfall": self._cumulative_rainfall,
+            "device": {
+                "device_temperature": self.calculate_internal_temperature()
+            }
         }
+
         self._rocker_count = self._rocker_count - self._rocker_count
-        self._listener.on_data_received(sensor_data)
+
+        for listener in self._listeners:
+            listener.on_data_received(sensor_data)
+
+    def calculate_internal_temperature(self):
+        ADC_voltage = self._adc.read_u16() * (3.3 / (65535))
+        return 27 - (ADC_voltage - 0.706) / 0.001721

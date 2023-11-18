@@ -8,6 +8,7 @@ config = {
             'sda': Pin(16)
         },
     },
+    'output_file': 'last_weather_reading.json',
     'mqtt': {
         'host': "192.168.1.5",
         'client_id': "weatherstation",

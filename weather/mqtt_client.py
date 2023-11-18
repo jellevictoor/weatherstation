@@ -1,25 +1,30 @@
 import json
 
+import machine
 from umqtt.simple import MQTTClient
-
-from weather.config import config
 
 
 class MqttClient:
-    _mqtt_server = config['mqtt']['host']
-    _client_id = config['mqtt']['client_id']
-    _topic_pub = config['mqtt']['topic_pub']
-    _status_pub = config['mqtt']['status_pub']
 
-    def __init__(self):
-        self._client = MQTTClient(self._client_id, self._mqtt_server, keepalive=5)
-        self._client.set_last_will(topic=self._status_pub, msg=json.dumps({"status": "offline"}), retain=True, qos=1)
-        self._client.connect()
-        print('Connected to %s MQTT Broker' % self._mqtt_server)
+    def __init__(self, config):
+        self._topic_pub = config['mqtt']['topic_pub']
+        self._status_pub = config['mqtt']['status_pub']
+        self._client = self.init_client(config)
         self._client.publish(self._status_pub, json.dumps({"status": "online"}), retain=True)
+
+    def init_client(self, config):
+        host = config['mqtt']['host']
+        client_id = config['mqtt']['client_id']
+        client = MQTTClient(client_id, host, keepalive=5)
+        client.set_last_will(topic=self._status_pub, msg=json.dumps({"status": "offline"}), retain=True, qos=1)
+        client.connect()
+        print('Connected to %s MQTT Broker' % host)
+        return client
 
     def publish(self, data):
         try:
+            data['device'] = {'device_temperature': self.calculate_internal_temperature()}
             self._client.publish(self._topic_pub, json.dumps(data))
         except OSError as e:
             print("failed to connect")
+

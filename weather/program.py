@@ -4,7 +4,7 @@ import network
 from machine import Pin, Timer, WDT
 
 from weather.config import config
-from weather.listener import WeatherStationListener
+from weather.listeners import WeatherStationListener, FilesystemListener
 from weather.mqtt_client import MqttClient
 from weather.weather_station import WeatherStation
 
@@ -54,9 +54,9 @@ def flash_led():
 
 def setup():
     start_up_sequence()
-    client = MqttClient()
-    station = WeatherStation(listener=WeatherStationListener(client, wdt))
+    client = MqttClient(config)
+    station = WeatherStation(config, [WeatherStationListener(client, wdt), FilesystemListener(config, wdt)])
     timer = Timer(-1)
-    timer.init(period=TIMEOUT, mode=Timer.PERIODIC, callback=station.notify)
+    timer.init(period=TIMEOUT, mode=Timer.PERIODIC, callback=station.read_weather_data)
 
     wdt.feed()  # make sure the watchdog does not shut it down
