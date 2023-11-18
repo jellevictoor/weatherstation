@@ -7,6 +7,7 @@ from weather.config import config
 class WeatherStation:
     def __init__(self, listener=None):
         self._rocker_count = 0
+        self._cumulative_rainfall = 0
         self._rocker_modifier = 0.3274793067734472
         self._scl = config['pins']['bme']['scl']
         self._sda = config['pins']['bme']['sda']
@@ -21,11 +22,11 @@ class WeatherStation:
 
     def connect_with_bme(self):
         i2c = I2C(id=0, scl=self._scl, sda=self._sda)
-
         return BME680_I2C(i2c=i2c)
 
     def notify(self, timer):
         rainfall = (self._rocker_count / 2) * self._rocker_modifier  # always triggered twice
+        self._cumulative_rainfall = self._cumulative_rainfall + rainfall
         sensor_data = {
             "temperature": self._bme.temperature(),
             "humidity": self._bme.humidity(),
@@ -36,7 +37,8 @@ class WeatherStation:
             "humidity_oversample": self._bme.humidity_oversample(),
             "pressure_oversample": self._bme.pressure_oversample(),
             "filter_size": self._bme.filter_size(),
-            "rainfall": rainfall
+            "rainfall": rainfall,
+            "cumulative_rainfall": self._cumulative_rainfall
         }
         self._rocker_count = self._rocker_count - self._rocker_count
         self._listener.on_data_received(sensor_data)
