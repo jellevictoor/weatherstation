@@ -1,6 +1,5 @@
 import json
 
-import machine
 from umqtt.simple import MQTTClient
 
 
@@ -15,6 +14,7 @@ class MqttClient:
     def init_client(self, config):
         host = config['mqtt']['host']
         client_id = config['mqtt']['client_id']
+        print("connecting to mqtt broker: %s" % host)
         client = MQTTClient(client_id, host, keepalive=5)
         client.set_last_will(topic=self._status_pub, msg=json.dumps({"status": "offline"}), retain=True, qos=1)
         client.connect()
@@ -23,7 +23,6 @@ class MqttClient:
 
     def publish(self, data):
         try:
-            data['device'] = {'device_temperature': self.calculate_internal_temperature()}
             self._client.publish(self._topic_pub, json.dumps(data))
         except OSError as e:
             print("failed to connect")

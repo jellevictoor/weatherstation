@@ -1,6 +1,6 @@
 from machine import I2C, ADC
 
-from bme680 import *
+from weather.bme680 import BME680_I2C
 
 
 class WeatherStation:
@@ -33,15 +33,15 @@ class WeatherStation:
         self._cumulative_rainfall = self._cumulative_rainfall + rainfall
 
         sensor_data = {
-            "temperature": self._bme.temperature(),
-            "humidity": self._bme.humidity(),
-            "pressure": self._bme.pressure(),
-            "gas": self._bme.gas(),
-            "altitude": self._bme.altitude(),
-            "temperature_oversample": self._bme.temperature_oversample(),
-            "humidity_oversample": self._bme.humidity_oversample(),
-            "pressure_oversample": self._bme.pressure_oversample(),
-            "filter_size": self._bme.filter_size(),
+            "temperature": self._bme.temperature,
+            "humidity": self._bme.humidity,
+            "pressure": self._bme.pressure,
+            "gas": self._bme.gas,
+            "altitude": self._bme.altitude,
+            "temperature_oversample": self._bme.temperature_oversample,
+            "humidity_oversample": self._bme.humidity_oversample,
+            "pressure_oversample": self._bme.pressure_oversample,
+            "filter_size": self._bme.filter_size,
             "rainfall": rainfall,
             "cumulative_rainfall": self._cumulative_rainfall,
             "device": {

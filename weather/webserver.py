@@ -2,6 +2,7 @@ import json
 import socket
 
 
+
 class WebServer:
     def __init__(self, config):
         self._output_file = config['output_file']
@@ -13,9 +14,10 @@ class WebServer:
         self._socket.listen(1)
 
         print('listening on', addr)
-        self._listen()
+
 
     async def _listen(self):
+        print('listening')
         while True:
             try:
                 cl, addr = self._socket.accept()

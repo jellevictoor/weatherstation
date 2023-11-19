@@ -7,6 +7,7 @@ from weather.config import config
 from weather.listeners import WeatherStationListener, FilesystemListener
 from weather.mqtt_client import MqttClient
 from weather.weather_station import WeatherStation
+from weather.webserver import WebServer
 
 TIMEOUT = 5000
 
@@ -16,7 +17,7 @@ class FakeWatchDog:
         print("feeding")
 
 
-# wdt = FakeWatchDog()
+#wdt = FakeWatchDog()
 wdt = WDT(timeout=TIMEOUT + 3000)  # set a timeout of 3s more
 machine_led = Pin('LED', Pin.OUT)
 
@@ -54,6 +55,7 @@ def flash_led():
 
 def setup():
     start_up_sequence()
+    WebServer(config)
     client = MqttClient(config)
     station = WeatherStation(config, [WeatherStationListener(client, wdt), FilesystemListener(config, wdt)])
     timer = Timer(-1)

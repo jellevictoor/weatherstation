@@ -1,14 +1,6 @@
 import json
-from abc import abstractmethod, ABC
 
-
-class Listener(ABC):
-    @abstractmethod
-    def on_data_received(self, sensor_data):
-        pass
-
-
-class FilesystemListener(Listener):
+class FilesystemListener():
     def __init__(self, config, wdt):
         self._wdt = wdt
         self._output_file = config['output_file']
@@ -19,7 +11,7 @@ class FilesystemListener(Listener):
         self._wdt.feed()
 
 
-class WeatherStationListener(Listener):
+class WeatherStationListener():
     def __init__(self, mqtt_client, wdt):
         self._mqtt_client = mqtt_client
         self._wdt = wdt
