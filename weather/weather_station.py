@@ -55,5 +55,5 @@ class WeatherStation:
             listener.on_data_received(sensor_data)
 
     def calculate_internal_temperature(self):
-        ADC_voltage = self._adc.read_u16() * (3.3 / (65535))
-        return 27 - (ADC_voltage - 0.706) / 0.001721
+        adc_voltage = self._adc.read_u16() * (3.3 / (65535))
+        return 27 - (adc_voltage - 0.706) / 0.001721
