@@ -16,11 +16,11 @@ class WebServer:
         print('listening on', addr)
 
 
-    async def _listen(self):
+    async def listen(self):
         print('listening')
         while True:
             try:
-                cl, addr = self._socket.accept()
+                cl, addr = await self._socket.accept()
                 request = cl.recv(1024)
                 request = str(request)
                 status = request.find('/status')
@@ -33,6 +33,7 @@ class WebServer:
                     with open(self._output_file, 'r') as infile:
                         payload = json.load(infile.read())
 
+
                 if payload is not None:
                     cl.send('HTTP/1.0 200 OK\r\nContent-type: application/json\r\n\r\n')
                     cl.send(payload)
@@ -43,4 +44,5 @@ class WebServer:
 
             except OSError as e:
                 cl.close()
+                print(e)
                 print('connection closed')

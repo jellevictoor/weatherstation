@@ -1,4 +1,4 @@
-from machine import I2C, ADC
+from machine import I2C, ADC, Timer
 
 from weather.bme680 import BME680_I2C
 
@@ -57,3 +57,8 @@ class WeatherStation:
     def calculate_internal_temperature(self):
         adc_voltage = self._adc.read_u16() * (3.3 / (65535))
         return 27 - (adc_voltage - 0.706) / 0.001721
+
+    def start(self, timeout=5000):
+        print("starting weather station")
+        timer = Timer(-1)
+        timer.init(period=timeout, mode=Timer.PERIODIC, callback=self.read_weather_data)

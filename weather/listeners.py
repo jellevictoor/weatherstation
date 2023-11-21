@@ -1,4 +1,5 @@
 import json
+import machine
 
 class FilesystemListener():
     def __init__(self, config, wdt):
@@ -22,3 +23,4 @@ class WeatherStationListener():
             self._wdt.feed()  # make sure the watchdog does not shut it down
         except OSError as e:
             print("failed to connect")
+            machine.soft_reset()

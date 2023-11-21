@@ -1,3 +1,4 @@
+import uasyncio
 from time import sleep
 
 import network
@@ -53,12 +54,14 @@ def flash_led():
         sleep(0.1)
 
 
-def setup():
-    start_up_sequence()
-    WebServer(config)
+def main_loop():
     client = MqttClient(config)
-    station = WeatherStation(config, [WeatherStationListener(client, wdt), FilesystemListener(config, wdt)])
-    timer = Timer(-1)
-    timer.init(period=TIMEOUT, mode=Timer.PERIODIC, callback=station.read_weather_data)
+    weather_station = WeatherStation(config, [WeatherStationListener(client, wdt), FilesystemListener(config, wdt)])
+    weather_station.start(TIMEOUT)
 
     wdt.feed()  # make sure the watchdog does not shut it down
+
+
+def setup():
+    start_up_sequence()
+    main_loop()

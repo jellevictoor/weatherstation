@@ -1,5 +1,6 @@
 import json
 
+import machine
 from umqtt.simple import MQTTClient
 
 
@@ -18,6 +19,7 @@ class MqttClient:
         client = MQTTClient(client_id, host, keepalive=5)
         client.set_last_will(topic=self._status_pub, msg=json.dumps({"status": "offline"}), retain=True, qos=1)
         client.connect()
+
         print('Connected to %s MQTT Broker' % host)
         return client
 
@@ -25,5 +27,5 @@ class MqttClient:
         try:
             self._client.publish(self._topic_pub, json.dumps(data))
         except OSError as e:
-            print("failed to connect")
+            raise e
 
