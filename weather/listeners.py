@@ -1,7 +1,9 @@
 import json
+
 import machine
 
-class FilesystemListener():
+
+class FilesystemListener:
     def __init__(self, config, wdt):
         self._wdt = wdt
         self._output_file = config['output_file']
@@ -12,7 +14,7 @@ class FilesystemListener():
         self._wdt.feed()
 
 
-class WeatherStationListener():
+class WeatherStationListener:
     def __init__(self, mqtt_client, wdt):
         self._mqtt_client = mqtt_client
         self._wdt = wdt
