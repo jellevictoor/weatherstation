@@ -1,4 +1,4 @@
-from machine import I2C, ADC, Timer
+from machine import I2C, ADC, Timer, Pin
 
 from weather.bme680 import BME680_I2C
 
@@ -15,12 +15,13 @@ class WeatherStation:
         self._sda = config['pins']['bme']['sda']
         self._listeners = listeners
         self._rocker_pin = config['pins']['rocker']
-        self._rocker_pin.irq(self.tipped)
+        self._rocker_pin.irq(self.tipped, trigger=Pin.IRQ_FALLING)
 
         self._bme = self.connect_with_bme()
         self._adc = ADC(4)
 
     def tipped(self, pin):
+        print(pin)
         self._rocker_count = self._rocker_count + 1
         print("rocker triggered")
 
@@ -29,7 +30,7 @@ class WeatherStation:
         return BME680_I2C(i2c=i2c)
 
     def read_weather_data(self, timer):
-        rainfall = (self._rocker_count / 2) * self._rocker_modifier  # always triggered twice
+        rainfall = self._rocker_count * self._rocker_modifier
         self._cumulative_rainfall = self._cumulative_rainfall + rainfall
 
         sensor_data = {
