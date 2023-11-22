@@ -11,6 +11,7 @@ This is a MicroPython-based weather station designed for real-time environmental
 * Rainfall Measurement: Accurately records rainfall data through a rain gauge.
 * Environmental Sensing: Measures temperature, humidity, pressure, and gas concentration using a BME680 sensor.
 * MQTT Communication: Sends sensor data to an MQTT broker, allowing for real-time data analysis and monitoring.
+* Http Server: Provides a simple http server to display the current sensor data and status.
 * Watchdog Timer: Ensures continuous operation and recovery from potential failures.
 
 # Hardware Requirements
