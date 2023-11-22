@@ -11,7 +11,7 @@ class FilesystemListener:
     def on_data_received(self, sensor_data):
         with open(self._output_file, 'w') as outfile:
             json.dump(sensor_data, outfile)
-        self._wdt.feed()
+        self._wdt.feed()  # make sure the watchdog does not shut it down
 
 
 class WeatherStationListener:

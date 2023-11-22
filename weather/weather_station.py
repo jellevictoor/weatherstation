@@ -1,4 +1,5 @@
-from machine import I2C, ADC, Timer, Pin
+import uasyncio
+from machine import I2C, ADC, Pin
 
 from weather.bme680 import BME680_I2C
 
@@ -29,7 +30,7 @@ class WeatherStation:
         i2c = I2C(id=0, scl=self._scl, sda=self._sda)
         return BME680_I2C(i2c=i2c)
 
-    def read_weather_data(self, timer):
+    def read_weather_data(self):
         rainfall = self._rocker_count * self._rocker_modifier
         self._cumulative_rainfall = self._cumulative_rainfall + rainfall
 
@@ -56,7 +57,9 @@ class WeatherStation:
         adc_voltage = self._adc.read_u16() * (3.3 / (65535))
         return 27 - (adc_voltage - 0.706) / 0.001721
 
-    def start(self, timeout=5000):
+    async def start(self, timeout=5000):
         print("starting weather station")
-        timer = Timer(-1)
-        timer.init(period=timeout, mode=Timer.PERIODIC, callback=self.read_weather_data)
+        while True:
+            print("reading weather data")
+            self.read_weather_data()
+            await uasyncio.sleep_ms(timeout)

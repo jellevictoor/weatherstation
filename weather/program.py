@@ -1,8 +1,8 @@
-import uasyncio
 from time import sleep
 
 import network
-from machine import Pin, Timer, WDT
+import uasyncio
+from machine import Pin, WDT
 
 from weather.config import config
 from weather.listeners import WeatherStationListener, FilesystemListener
@@ -17,8 +17,11 @@ class FakeWatchDog:
     def feed(self):
         print("feeding")
 
+# uncomment the WDT line to enable the watchdog
+# enabling the watchdog will cause the device to reboot if it is not fed within the timeout
+# this can be problematic if you are debugging the device or even pushing new code to it
 
-#wdt = FakeWatchDog()
+# wdt = FakeWatchDog()
 wdt = WDT(timeout=TIMEOUT + 3000)  # set a timeout of 3s more
 machine_led = Pin('LED', Pin.OUT)
 
@@ -54,14 +57,19 @@ def flash_led():
         sleep(0.1)
 
 
-def main_loop():
+async def main_loop():
+    loop = uasyncio.get_event_loop()
     client = MqttClient(config)
+    server = WebServer(config).listen()
     weather_station = WeatherStation(config, [WeatherStationListener(client, wdt), FilesystemListener(config, wdt)])
-    weather_station.start(TIMEOUT)
+
+    uasyncio.create_task(weather_station.start(TIMEOUT))
+    loop.create_task(server)
 
     wdt.feed()  # make sure the watchdog does not shut it down
+    loop.run_forever()
 
 
 def setup():
     start_up_sequence()
-    main_loop()
+    uasyncio.run(main_loop())

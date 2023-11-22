@@ -1,48 +1,44 @@
 import json
 import socket
 
+import uasyncio
 
 
 class WebServer:
     def __init__(self, config):
         self._output_file = config['output_file']
 
-        addr = socket.getaddrinfo('0.0.0.0', 80)[0][-1]
+    def listen(self) -> uasyncio.Server:
+        print("Starting webserver...")
+        return uasyncio.start_server(self._serve, '0.0.0.0', 80)
 
-        self._socket = socket.socket()
-        self._socket.bind(addr)
-        self._socket.listen(1)
+    def _get_payload(self, request):
+        request = str(request)
+        status = request.find('/status')
+        last = request.find('/last')
+        payload = None
+        if status >= 0:
+            payload = json.dumps({'status': 'ok'})
+        elif last >= 0:
+            with open(self._output_file, 'r') as infile:
+                json_data = json.load(infile)
+                payload = json.dumps(json_data)
+        return payload
 
-        print('listening on', addr)
+    async def _serve(self, reader: uasyncio.StreamReader, writer: uasyncio.StreamWriter):
+        try:
+            print("HTTP-Client Connected...")
+            request = str(await reader.read(1024))
+            print(request)
+            payload = self._get_payload(request)
+            await writer.awrite('HTTP/1.1 200 OK\r\n')
+            await writer.awrite('Connection: close\r\n')
+            await writer.awrite('Content-Type: application/json\r\n\r\n')
+            await writer.awrite(payload)
 
+            await reader.wait_closed()
+            await writer.drain()
+            await writer.wait_closed()
 
-    async def listen(self):
-        print('listening')
-        while True:
-            try:
-                cl, addr = await self._socket.accept()
-                request = cl.recv(1024)
-                request = str(request)
-                status = request.find('/status')
-                last = request.find('/last')
-
-                payload = None
-                if status >= 0:
-                    payload = json.dumps({'status': 'ok'})
-                elif last >= 0:
-                    with open(self._output_file, 'r') as infile:
-                        payload = json.load(infile.read())
-
-
-                if payload is not None:
-                    cl.send('HTTP/1.0 200 OK\r\nContent-type: application/json\r\n\r\n')
-                    cl.send(payload)
-                    cl.close()
-                    continue
-                else:
-                    cl.send('HTTP/1.0 404 Not Found\r\nContent-type: text/html\r\n\r\n')
-
-            except OSError as e:
-                cl.close()
-                print(e)
-                print('connection closed')
+        except Exception as e:
+            print(e)
