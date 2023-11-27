@@ -11,7 +11,8 @@ class WeatherStation:
 
         self._rocker_count = 0
         self._cumulative_rainfall = 0
-        self._rocker_modifier = 0.3274793067734472
+
+        self._rocker_modifier = 0.18080529197403408
         self._scl = config['pins']['bme']['scl']
         self._sda = config['pins']['bme']['sda']
         self._listeners = listeners
