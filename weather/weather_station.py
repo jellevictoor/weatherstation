@@ -1,7 +1,7 @@
 import uasyncio
-from machine import I2C, ADC, Pin
+from machine import ADC, Pin
 
-from weather.bme680 import BME680_I2C
+from weather.climate_monitor import ClimateMonitor
 
 
 class WeatherStation:
@@ -15,11 +15,12 @@ class WeatherStation:
         self._rocker_modifier = 0.18080529197403408
         self._scl = config['pins']['bme']['scl']
         self._sda = config['pins']['bme']['sda']
+        self._vin = config['pins']['bme']['vin']
         self._listeners = listeners
         self._rocker_pin = config['pins']['rocker']
         self._rocker_pin.irq(self.tipped, trigger=Pin.IRQ_FALLING)
+        self._bme = None
 
-        self._bme = self.connect_with_bme()
         self._adc = ADC(4)
 
     def tipped(self, pin):
@@ -28,26 +29,27 @@ class WeatherStation:
         print("rocker triggered")
 
     def connect_with_bme(self):
-        i2c = I2C(id=0, scl=self._scl, sda=self._sda)
-        return BME680_I2C(i2c=i2c)
+
+        return
 
     def read_weather_data(self):
         rainfall = self._rocker_count * self._rocker_modifier
         self._cumulative_rainfall = self._cumulative_rainfall + rainfall
 
-        sensor_data = {
-            "temperature": self._bme.temperature,
-            "humidity": self._bme.humidity,
-            "pressure": self._bme.pressure,
-            "gas": self._bme.gas,
-            "altitude": self._bme.altitude,
-            "filter_size": self._bme.filter_size,
-            "rainfall": rainfall,
-            "cumulative_rainfall": self._cumulative_rainfall,
-            "device": {
-                "device_temperature": self.calculate_internal_temperature()
+        with ClimateMonitor(self._vin, self._scl, self._sda) as climate_monitor:
+            sensor_data = {
+                "temperature": climate_monitor.get_temperature(),
+                "humidity": climate_monitor.get_humidity(),
+                "pressure": climate_monitor.get_pressure(),
+                "gas": climate_monitor.get_gas(),
+                "altitude": climate_monitor.get_altitude(),
+                "filter_size": climate_monitor.get_filter_size(),
+                "rainfall": rainfall,
+                "cumulative_rainfall": self._cumulative_rainfall,
+                "device": {
+                    "device_temperature": self.calculate_internal_temperature()
+                }
             }
-        }
 
         self._rocker_count = self._rocker_count - self._rocker_count
 

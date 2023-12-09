@@ -5,7 +5,8 @@ config = {
         'rocker': Pin(28, Pin.IN, Pin.PULL_UP),
         'bme': {
             'scl': Pin(17),
-            'sda': Pin(16)
+            'sda': Pin(16),
+            'vin': Pin(22, Pin.OUT)
         },
     },
     'output_file': 'last_weather_reading.json',
@@ -15,6 +16,6 @@ config = {
         'topic_pub': b'klskmp/buiten/weather_station/data',
         'status_pub': b'klskmp/buiten/weather_station/status'
     },
-    'wifi_ssid': "secret",
-    'wifi_password': "secret"
+    'wifi_ssid': "victoor_iot",
+    'wifi_password': "!"
 }
