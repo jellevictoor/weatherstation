@@ -17,12 +17,13 @@ class FakeWatchDog:
     def feed(self):
         print("feeding")
 
+
 # uncomment the WDT line to enable the watchdog
 # enabling the watchdog will cause the device to reboot if it is not fed within the timeout
 # this can be problematic if you are debugging the device or even pushing new code to it
 
-wdt = FakeWatchDog()
-#wdt = WDT(timeout=TIMEOUT + 3000)  # set a timeout of 3s more
+# wdt = FakeWatchDog()
+wdt = WDT(timeout=TIMEOUT + 3000)  # set a timeout of 3s more
 machine_led = Pin('LED', Pin.OUT)
 
 

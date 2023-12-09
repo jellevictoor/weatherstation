@@ -19,7 +19,6 @@ class WeatherStation:
         self._listeners = listeners
         self._rocker_pin = config['pins']['rocker']
         self._rocker_pin.irq(self.tipped, trigger=Pin.IRQ_FALLING)
-        self._bme = None
 
         self._adc = ADC(4)
 
@@ -27,10 +26,6 @@ class WeatherStation:
         print(pin)
         self._rocker_count = self._rocker_count + 1
         print("rocker triggered")
-
-    def connect_with_bme(self):
-
-        return
 
     def read_weather_data(self):
         rainfall = self._rocker_count * self._rocker_modifier
