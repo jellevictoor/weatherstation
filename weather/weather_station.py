@@ -12,7 +12,7 @@ class WeatherStation:
         self._rocker_count = 0
         self._cumulative_rainfall = 0
 
-        self._rocker_modifier = 0.18080529197403408
+        self._rocker_modifier = 0.19044181224671242
         self._scl = config['pins']['bme']['scl']
         self._sda = config['pins']['bme']['sda']
         self._vin = config['pins']['bme']['vin']
@@ -40,6 +40,7 @@ class WeatherStation:
                 "altitude": climate_monitor.get_altitude(),
                 "filter_size": climate_monitor.get_filter_size(),
                 "rainfall": rainfall,
+                "calibration_value": self._rocker_modifier,
                 "cumulative_rainfall": self._cumulative_rainfall,
                 "device": {
                     "device_temperature": self.calculate_internal_temperature()
