@@ -13,6 +13,7 @@ class WeatherStation:
         self._cumulative_rainfall = 0
 
         self._rocker_modifier = 0.19044181224671242
+        self.temperature_correction = 2.3221693163561645
         self._scl = config['pins']['bme']['scl']
         self._sda = config['pins']['bme']['sda']
         self._vin = config['pins']['bme']['vin']
@@ -33,7 +34,8 @@ class WeatherStation:
 
         with ClimateMonitor(self._vin, self._scl, self._sda) as climate_monitor:
             sensor_data = {
-                "temperature": climate_monitor.get_temperature(),
+                "raw_temperature": climate_monitor.get_temperature(),
+                "temperature": climate_monitor.get_temperature() - self.temperature_correction,
                 "humidity": climate_monitor.get_humidity(),
                 "pressure": climate_monitor.get_pressure(),
                 "gas": climate_monitor.get_gas(),
