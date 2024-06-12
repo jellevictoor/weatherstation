@@ -24,5 +24,5 @@ class WeatherStationListener:
             self._mqtt_client.publish(sensor_data)
             self._wdt.feed()  # make sure the watchdog does not shut it down
         except OSError as e:
-            print("failed to connect")
+            print("failed to connect, restarting", e)
             machine.soft_reset()

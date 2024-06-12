@@ -2,12 +2,14 @@ from machine import Pin
 
 config = {
     'pins': {
-        'rocker': Pin(28, Pin.IN, Pin.PULL_UP),
-        'bme': {
-            'scl': Pin(17),
-            'sda': Pin(16),
-            'vin': Pin(22, Pin.OUT)
+        'rocker': Pin(15, Pin.IN, Pin.PULL_UP),
+        'bme680': {
+            'scl': Pin(5),
+            'sda': Pin(4),
         },
+        'dht22':{
+            'data': Pin(10, Pin.IN),
+        }
     },
     'output_file': 'last_weather_reading.json',
     'mqtt': {

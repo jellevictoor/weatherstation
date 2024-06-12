@@ -1,4 +1,5 @@
 import json
+import time
 
 import machine
 from umqtt.simple import MQTTClient
@@ -18,6 +19,7 @@ class MqttClient:
         print("connecting to mqtt broker: %s" % host)
         client = MQTTClient(client_id, host, keepalive=5)
         client.set_last_will(topic=self._status_pub, msg=json.dumps({"status": "offline"}), retain=True, qos=1)
+        time.sleep(1)
         client.connect()
 
         print('Connected to %s MQTT Broker' % host)

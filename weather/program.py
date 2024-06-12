@@ -22,7 +22,7 @@ class FakeWatchDog:
 # enabling the watchdog will cause the device to reboot if it is not fed within the timeout
 # this can be problematic if you are debugging the device or even pushing new code to it
 
-# wdt = FakeWatchDog()
+#wdt = FakeWatchDog()
 wdt = WDT(timeout=TIMEOUT + 3000)  # set a timeout of 3s more
 machine_led = Pin('LED', Pin.OUT)
 
@@ -48,6 +48,8 @@ def connect_wlan():
         tries = tries + 1
         sleep(2)
         wdt.feed()
+    if not wlan.isconnected():
+        raise Exception("Could not connect to wifi")
 
 
 def flash_led():

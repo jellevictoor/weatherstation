@@ -2,6 +2,7 @@ import uasyncio
 from machine import ADC, Pin
 
 from weather.climate_monitor import ClimateMonitor
+from weather.sensors import BME680_Sensor, DH22_Sensor
 
 
 class WeatherStation:
@@ -12,11 +13,14 @@ class WeatherStation:
         self._rocker_count = 0
         self._cumulative_rainfall = 0
 
-        self._rocker_modifier = 0.19044181224671242
-        self.temperature_correction = 2.3221693163561645
-        self._scl = config['pins']['bme']['scl']
-        self._sda = config['pins']['bme']['sda']
-        self._vin = config['pins']['bme']['vin']
+        self._rocker_modifier = 0.184839525
+        bme680_config_data = config['pins']['bme680']
+        self._scl = bme680_config_data['scl']
+        self._sda = bme680_config_data['sda']
+
+        self._bme680_sensor = BME680_Sensor(scl=bme680_config_data['scl'], sda=bme680_config_data['sda'])
+        self._dht22_sensor = DH22_Sensor(data=config['pins']['dht22']['data'])
+
         self._listeners = listeners
         self._rocker_pin = config['pins']['rocker']
         self._rocker_pin.irq(self.tipped, trigger=Pin.IRQ_FALLING)
@@ -32,21 +36,25 @@ class WeatherStation:
         rainfall = self._rocker_count * self._rocker_modifier
         self._cumulative_rainfall = self._cumulative_rainfall + rainfall
 
-        with ClimateMonitor(self._vin, self._scl, self._sda) as climate_monitor:
-            sensor_data = {
-                "raw_temperature": climate_monitor.get_temperature(),
-                "temperature": climate_monitor.get_temperature() - self.temperature_correction,
-                "humidity": climate_monitor.get_humidity(),
-                "pressure": climate_monitor.get_pressure(),
-                "gas": climate_monitor.get_gas(),
-                "altitude": climate_monitor.get_altitude(),
-                "filter_size": climate_monitor.get_filter_size(),
+        with ClimateMonitor(self._bme680_sensor, self._dht22_sensor) as climate_monitor:
+
+            dht_22_data = climate_monitor.dht22_sensor.get_data()
+            bme680_data = climate_monitor.bme680_sensor.get_data()
+            sensor_data = {}
+            if dht_22_data is not None:
+                sensor_data['dht22'] = dht_22_data
+            if bme680_data is not None:
+                sensor_data['bme680'] = bme680_data
+
+            sensor_data['device'] = {
+                "device_temperature": self.calculate_internal_temperature()
+            }
+
+            sensor_data['rainfall'] = {
                 "rainfall": rainfall,
                 "calibration_value": self._rocker_modifier,
                 "cumulative_rainfall": self._cumulative_rainfall,
-                "device": {
-                    "device_temperature": self.calculate_internal_temperature()
-                }
+
             }
 
         self._rocker_count = self._rocker_count - self._rocker_count
@@ -62,5 +70,8 @@ class WeatherStation:
         print("starting weather station")
         while True:
             print("reading weather data")
-            self.read_weather_data()
+            try:
+                self.read_weather_data()
+            except Exception as e:
+                print("error reading weather data ", e)
             await uasyncio.sleep_ms(timeout)

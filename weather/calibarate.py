@@ -5,12 +5,22 @@
 # if you decide to use another rain gauge you need to calculate the surface of the rain gauge
 # and replace the #surface variable
 import math
+from machine import ADC, Pin
+
 
 top_ring_diameter = 180
 
+def tipped(pin):
+    global calibration_rocks
+    calibration_rocks = calibration_rocks + 1
+    print("the single rock volume is: ", single_rock_volume(top_ring_diameter))
+
+
 # calibration values
-calibration_volume_l = 0.25
-calibration_rocks = 65
+calibration_volume_l = 0.3
+calibration_rocks = 0
+rocker = Pin(15, Pin.IN, Pin.PULL_UP)
+rocker.irq(tipped, trigger=Pin.IRQ_FALLING)
 
 
 def get_diameter(diameter_top_circle_mm):
@@ -25,5 +35,6 @@ def single_rock_volume(diameter_top_circle):
 
 
 
-in_liters_per_rock = single_rock_volume(top_ring_diameter)
-print(f"One rock is {in_liters_per_rock} liters")
+def main():
+    while True:
+        pass

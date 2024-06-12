@@ -1,0 +1,29 @@
+{
+    "_meta": {
+        "hash": {
+            "sha256": "ae7bcc5b7165203958d525b1c7248869c365b67d86880d9ed5161b24c9d46cc0"
+        },
+        "pipfile-spec": 6,
+        "requires": {
+            "python_full_version": "3.12.0",
+            "python_version": "3.12"
+        },
+        "sources": [
+            {
+                "name": "pypi",
+                "url": "https://pypi.org/simple",
+                "verify_ssl": true
+            }
+        ]
+    },
+    "default": {
+        "micropython-umqtt.robust": {
+            "hashes": [
+                "sha256:22a1b8c8e1128281efb13b3020927d07e33c5b747869da2cd77d37983a9ea002"
+            ],
+            "index": "pypi",
+            "version": "==1.0"
+        }
+    },
+    "develop": {}
+}

@@ -1,41 +1,48 @@
-import time
-
-from machine import I2C
-
-from weather.bme680 import BME680_I2C
+from weather.sensors import BME680_Sensor, DH22_Sensor
 
 
 class ClimateMonitor:
-    def __init__(self, vin, scl, sda):
-        self._vin = vin
-        self._sda = sda
-        self._scl = scl
-        self._bme = None
+    def __init__(self, bme680_sensor: BME680_Sensor, dht22_sensor: DH22_Sensor):
+        self.bme680_sensor = bme680_sensor
+        self.dht22_sensor = dht22_sensor
 
     def __enter__(self):
-        self._vin.on()  # turn on
-        time.sleep(1)  # wait a bit :/
-        i2c = I2C(id=0, scl=self._scl, sda=self._sda)
-        self._bme = BME680_I2C(i2c=i2c)
+        print("connecting to sensors")
+        self.bme680_sensor.connect()
+        self.dht22_sensor.connect()
         return self
 
-    def get_temperature(self):
-        return self._bme.temperature
+    def get_temperature(self) -> dict[str, float]:
+        return {
+            "bme680": self.bme680_sensor.temperature,
+            "dht22": self.dht22_sensor.temperature
+        }
 
     def get_humidity(self):
-        return self._bme.humidity
+        return {
+            "bme680": self.bme680_sensor.humidity,
+            "dht22": self.dht22_sensor.humidity
+        }
 
     def get_pressure(self):
-        return self._bme.pressure
+        return {
+            "bme680": self.bme680_sensor.pressure,
+        }
 
     def get_gas(self):
-        return self._bme.gas
+        return {
+            "bme680": self.bme680_sensor.gas,
+        }
 
     def get_altitude(self):
-        return self._bme.altitude
+        return {
+            "bme680": self.bme680_sensor.altitude,
+        }
 
     def get_filter_size(self):
-        return self._bme.filter_size
+        return {
+            "bme680": self.bme680_sensor.filter_size,
+        }
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        self._vin.off()
+        pass
