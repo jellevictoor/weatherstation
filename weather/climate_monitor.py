@@ -7,8 +7,8 @@ class ClimateMonitor:
         self.dht22_sensor = dht22_sensor
 
     def __enter__(self):
-        print("connecting to sensors")
-        self.bme680_sensor.connect()
+        if not self.bme680_sensor.is_connected:
+            self.bme680_sensor.connect()
         self.dht22_sensor.connect()
         return self
 

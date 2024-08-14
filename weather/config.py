@@ -2,12 +2,14 @@ from machine import Pin
 
 config = {
     'pins': {
-        'rocker': Pin(15, Pin.IN, Pin.PULL_UP),
+        'rocker': Pin(22, Pin.IN, Pin.PULL_UP),
         'bme680': {
-            'scl': Pin(5),
-            'sda': Pin(4),
+            'i2c_bus': 1,
+            'scl': Pin(27),
+            'sda': Pin(26),
+
         },
-        'dht22':{
+        'dht22': {
             'data': Pin(10, Pin.IN),
         }
     },

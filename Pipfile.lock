@@ -1,12 +1,11 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "ae7bcc5b7165203958d525b1c7248869c365b67d86880d9ed5161b24c9d46cc0"
+            "sha256": "ac97915e6e1471ae0d7dfd71070e4dd19fba11cdd283c04323022a8d8904acc8"
         },
         "pipfile-spec": 6,
         "requires": {
-            "python_full_version": "3.12.0",
-            "python_version": "3.12"
+            "python_version": "3.5"
         },
         "sources": [
             {
@@ -17,6 +16,22 @@
         ]
     },
     "default": {
+        "micropython-rp2-stubs": {
+            "hashes": [
+                "sha256:69bae8aa076a563b172ab5f58d5e52854957eca523a5cc19bc6f4d0537e1b4a5",
+                "sha256:beb7d38f62e5b7479b63cddbe6d5584ee5d7d3e2efc4582b90d08e9b35506145"
+            ],
+            "index": "pypi",
+            "version": "==1.19.1.post14"
+        },
+        "micropython-stdlib-stubs": {
+            "hashes": [
+                "sha256:0e20e044f24b7f5d67205fd08780aa4ca0ea3741e4d14406ff7dca1ed8364f49",
+                "sha256:a455a01a5d7700ef99124072d94c967d5123778512260d87679e47e57f81e3d8"
+            ],
+            "markers": "python_version >= '3.8' and python_version < '4.0'",
+            "version": "==1.1.2"
+        },
         "micropython-umqtt.robust": {
             "hashes": [
                 "sha256:22a1b8c8e1128281efb13b3020927d07e33c5b747869da2cd77d37983a9ea002"

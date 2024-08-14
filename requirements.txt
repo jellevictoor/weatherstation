@@ -1,1 +1,2 @@
 micropython-umqtt.robust>=1.0
+micropython-rp2-pico_w-stubs>=1.0

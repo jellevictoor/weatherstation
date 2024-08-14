@@ -5,9 +5,9 @@ name = "pypi"
 
 [packages]
 "micropython-umqtt.robust" = ">=1.0"
+"micropython-rp2-stubs" = "==1.19.1.*"
 
 [dev-packages]
 
 [requires]
-python_version = "3.12"
-python_full_version = "3.12.0"
+python_version = "3.5"

@@ -1,6 +1,6 @@
 import dht
-from machine import I2C
 from machine import Pin
+from machine import SoftI2C
 
 from weather.bme680 import BME680_I2C
 
@@ -9,42 +9,35 @@ class BME680_Sensor:
     scl: Pin
     sda: Pin
 
-    def __init__(self, scl: Pin, sda: Pin):
+    def __init__(self, bus: int, scl: Pin, sda: Pin):
+
         self.__connection = None
+        self.bus = bus
         self.scl = scl
         self.sda = sda
 
+    @property
+    def is_connected(self):
+        return self.__connection is not None
+
     def connect(self):
-        if self.__connection is None:
-            i2c = I2C(id=0, scl=self.scl, sda=self.sda)
-            self.__connection = BME680_I2C(i2c=i2c)
-            print("connected to bme680")
+        if not self.is_connected:
+            print("connecting to", self.__class__)
+            try:
+                i2c = SoftI2C(scl=self.scl, sda=self.sda)
 
-    @property
-    def temperature(self):
-        return self.__connection.temperature
-
-    @property
-    def humidity(self):
-        return self.__connection.humidity
-
-    @property
-    def pressure(self):
-        return self.__connection.pressure
-
-    @property
-    def gas(self):
-        return self.__connection.gas
-
-    @property
-    def filter_size(self):
-        return self.__connection.filter_size
-
-    @property
-    def altitude(self):
-        return self.__connection.altitude
+                found_devices = i2c.scan()
+                if found_devices:
+                    found_address = found_devices[0]
+                    print("found bme680 on address", found_address)
+                    self.__connection = BME680_I2C(i2c=i2c, address=found_address)
+                    print("connected to bme680")
+            except Exception as e:
+                print("error connecting to bme680", e)
 
     def get_data(self):
+        if not self.is_connected:
+            return
         try:
             return {
                 "temperature": self.__connection.temperature,
@@ -66,22 +59,23 @@ class DH22_Sensor:
         self.data = data
         self.__connection = None
 
+    @property
+    def is_connected(self):
+        return self.__connection is not None
+
     def connect(self):
-        if self.__connection is None:
-            self.__connection = dht.DHT22(self.data)
-            print("connected to dht22")
-
-    @property
-    def temperature(self):
-        self.__connection.measure()
-        return self.__connection.temperature()
-
-    @property
-    def humidity(self):
-        self.__connection.measure()
-        return self.__connection.humidity()
+        if not self.is_connected:
+            print("connecting to", self.__class__)
+            try:
+                self.__connection = dht.DHT22(self.data)
+                print("connected to dht22")
+            except Exception as e:
+                print("error connecting to dht22", e)
 
     def get_data(self):
+        if not self.is_connected:
+            return
+
         try:
             self.__connection.measure()
             return {

@@ -18,7 +18,10 @@ class WeatherStation:
         self._scl = bme680_config_data['scl']
         self._sda = bme680_config_data['sda']
 
-        self._bme680_sensor = BME680_Sensor(scl=bme680_config_data['scl'], sda=bme680_config_data['sda'])
+        self._bme680_sensor = BME680_Sensor(
+            bus=bme680_config_data['i2c_bus'],
+            scl=bme680_config_data['scl'],
+            sda=bme680_config_data['sda'])
         self._dht22_sensor = DH22_Sensor(data=config['pins']['dht22']['data'])
 
         self._listeners = listeners
@@ -74,4 +77,6 @@ class WeatherStation:
                 self.read_weather_data()
             except Exception as e:
                 print("error reading weather data ", e)
+                import sys
+                sys.print_exception(e)
             await uasyncio.sleep_ms(timeout)
